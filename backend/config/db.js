@@ -1,25 +1,26 @@
 import { Sequelize } from "sequelize";
-import dotenv from "dotenv";
+import "dotenv/config";
 
-dotenv.config();
+const isProduction = process.env.NODE_ENV === "production";
 
-const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD,
-  {
-    host: process.env.DB_HOST,
-    dialect: "postgres",
-    logging: false,
-  }
-);
+// This is the crucial change. It uses the single DATABASE_URL from Render.
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: "postgres",
+  protocol: "postgres",
+  dialectOptions: {
+    // SSL is required for production connections on Render
+    ssl: isProduction ? { require: true, rejectUnauthorized: false } : false,
+  },
+  logging: false,
+});
 
 const connectDB = async () => {
   try {
     await sequelize.authenticate();
-    console.log("✅ PostgreSQL database connected successfully!");
+    console.log("✅ Database connection established successfully.");
   } catch (error) {
     console.error("❌ Unable to connect to the database:", error);
+    process.exit(1); // Exit the process with an error code
   }
 };
 
