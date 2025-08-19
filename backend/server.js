@@ -10,27 +10,21 @@ dotenv.config();
 const app = express();
 
 // --- START: Updated CORS Configuration ---
-const allowedOrigins = [
-  "http://localhost:5173", // your local frontend
-  process.env.FRONTEND_URL, // your deployed frontend
-];
+const allowedOrigins = ["http://localhost:5173", process.env.FRONTEND_URL];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg =
-          "The CORS policy for this site does not allow access from the specified Origin.";
-        return callback(new Error(msg), false);
+      // Check if the origin is in our allowed list or if there's no origin (like for server-to-server requests or REST clients)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
       }
-      return callback(null, true);
     },
     credentials: true,
   })
 );
-// --- END: Updated CORS Configuration ---
 
 app.use(express.json());
 
