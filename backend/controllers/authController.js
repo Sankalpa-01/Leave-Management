@@ -3,13 +3,21 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 // Register
+// In authController.js
+
 export const register = async (req, res) => {
   try {
     const { name, email, department, joiningDate, role, password } = req.body;
 
     const existing = await Employee.findOne({ where: { email } });
-    if (existing)
+    if (existing) {
       return res.status(400).json({ message: "Email already exists" });
+    }
+
+    // --- START: Hash password directly ---
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    // --- END: Hash password directly ---
 
     const employee = await Employee.create({
       name,
@@ -17,12 +25,13 @@ export const register = async (req, res) => {
       department,
       joiningDate,
       role,
-      passwordHash: password, // gets hashed via beforeCreate hook
+      passwordHash: hashedPassword, // Save the HASHED password
     });
 
     res.status(201).json({ message: "User registered successfully!" });
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    console.error("Registration Error:", err); // Log the full error
+    res.status(500).json({ message: "An error occurred during registration." });
   }
 };
 
