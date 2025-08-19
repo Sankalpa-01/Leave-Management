@@ -4,14 +4,6 @@ A full-stack web application designed as a simple and efficient leave management
 
 ---
 
-## 🚀 Live Demo
-
-You can view the live deployed application here:
-
-**[https://leave-management-seven-eta.vercel.app/](https://leave-management-seven-eta.vercel.app/)**
-
----
-
 ## ✨ Features
 
 The application supports two distinct user roles with tailored functionalities:
@@ -131,13 +123,6 @@ The backend exposes the following RESTful API endpoints:
 | `GET`  | `/api/leaves/all`           | Get all leave requests.               | HR        |
 | `GET`  | `/api/leaves/employee/:id`  | Get all leaves for a single employee. | Employee  |
 | `PUT`  | `/api/leaves/:id`           | Approve or reject a leave request.    | HR        |
-
----
-
-## 🚀 Deployment
-
-* The **Frontend** is deployed on **Vercel**.
-* The **Backend** and **PostgreSQL Database** are deployed on **Render**.
 
 ---
 
