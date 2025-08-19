@@ -27,17 +27,39 @@ export const register = async (req, res) => {
 };
 
 // Login
+// In authController.js
 export const login = async (req, res) => {
   console.log("Login request received with body:", req.body);
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ message: "Email and password are required." });
+    }
+
+    // --- Add logging to debug ---
+    console.log(`Attempting to find user with email: ${email}`);
     const user = await Employee.findOne({ where: { email } });
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
+
+    if (!user) {
+      console.log(`User not found for email: ${email}`);
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    console.log(`User found. Comparing password for user ID: ${user.id}`);
+    console.log(`Stored hash is: ${user.passwordHash}`); // See what the hash looks like
 
     const isMatch = await bcrypt.compare(password, user.passwordHash);
-    if (!isMatch)
+
+    if (!isMatch) {
+      console.log(`Password comparison failed for user ID: ${user.id}`);
       return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    console.log(`Password matched! Creating JWT for user ID: ${user.id}`);
+    // --- End of logging ---
 
     const token = jwt.sign(
       { id: user.id, role: user.role },
@@ -47,6 +69,7 @@ export const login = async (req, res) => {
 
     res.json({ id: user.id, token, role: user.role, name: user.name });
   } catch (err) {
+    console.error("An error occurred during login:", err); // Log the actual error
     res.status(500).json({ message: err.message });
   }
 };
