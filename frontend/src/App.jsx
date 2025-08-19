@@ -14,7 +14,6 @@ import Register from "./components/Register";
 import EmployeeDashboard from "./components/EmployeeDashboard";
 import HRDashboard from "./components/HRDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 
 function AppWrapper() {
